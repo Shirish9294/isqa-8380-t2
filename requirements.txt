@@ -1,0 +1,7 @@
+Django==3.0.7
+django-crispy-forms
+django-allauth
+ol
+psycopg2==2.8.6
+gunicorn
+django-heroku

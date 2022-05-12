@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {{ package.location }}
+{% endblock %}
+
+{% block content %}
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Product</title>
+    </head>
+    <style>
+        body {
+            background-color: Azure;
+        }
+
+        #cart-icon {
+            width: 25px;
+            display: inline-block;
+            margin-left: 15px;
+        }
+
+              .map {
+        height: 400px;
+        width: 50%;
+      }
+    </style>
+    <body>
+    <img src="{% static "images/Travel Works.png" %}" alt="logo" width="200" height="200">
+
+    <div style="padding: 10px;">
+        <h3><b>{{ object.location }}</b></h3>
+        <br>
+        <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/build/ol.js"></script>
+        <div id="map" class="map"></div>
+        <script type="text/javascript">
+      var map = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          })
+        ],
+        view: new ol.View({
+          center: ol.proj.fromLonLat([ {{object.lng}}, {{object.lat}} ]),
+          zoom: 12
+        })
+      });
+    </script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+      <script>
+      var settings = {
+        "url": "https://api.openweathermap.org/data/2.5/weather?lat={{object.lat}}&lon={{object.lng}}&units=imperial&appid=f0e697526bbe010ea5de65a13b72dd0d",
+        "method": "GET",
+        "timeout": 0,
+      };
+
+      $.ajax(settings).done(function (response) {
+        console.log(response);
+        const str = response.weather[0].description;
+        const str2 = str.toUpperCase();
+        var content = str2;
+        $("#weather").append(content);
+        var content = response.main.temp;
+        $("#temperature").append(content);
+      });
+      </script>
+        <h4>Currently: <span id="temperature"></span> F <span id="weather"></span></h4>
+        <h4>{{ object.description }}</h4>
+        <h4>Rating: {{ object.rating }}</h4>
+        <h4>{{ object.start_date }} - {{ object.end_date }}</h4><br>
+        <h4>${{ object.price }}</h4>
+    </div>
+    {#    <button type="submit">Add to Cart</button>#}
+    <div>
+        <button data-product="{{ package.id }}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">
+            Add to Cart
+        </button>
+        <a href="{% url 'shop:cart' %}">
+            <img id="cart-icon" src="{% static 'images/cart.png' %}">
+            <span id="cart-total"> {{ cartItems }} </span>
+        </a>
+    </div>
+    </body>
+
+{% endblock %}
